@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    <h2 class="mb-3">
+                        <i class="fas {% if character.type == 'fictional' %}fa-dragon text-primary{% else %}fa-user text-success{% endif %}"></i>
+                        {{ character.name }}
+                    </h2>
+                    <span class="badge {% if character.type == 'fictional' %}bg-primary{% else %}bg-success{% endif %} mb-3">
+                        {{ character.type }}
+                    </span>
+                </div>
+
+                {% if character.summary %}
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="fas fa-info-circle text-info"></i> Описание
+                            </h5>
+                            <p class="card-text">{{ character.summary }}</p>
+                        </div>
+                    </div>
+                {% endif %}
+
+                {% if character.url %}
+                    <div class="text-center mb-4">
+                        <a href="{{ character.url }}" target="_blank" class="btn btn-outline-primary">
+                            <i class="fas fa-external-link-alt"></i> Подробнее на Wikidata
+                        </a>
+                    </div>
+                {% endif %}
+
+                <div class="text-center">
+                    <a href="/" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left"></i> Вернуться к поиску
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

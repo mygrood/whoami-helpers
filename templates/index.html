@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h1 class="text-center mb-4">
+                    <i class="fas fa-search text-primary"></i> Поиск персонажа
+                </h1>
+                <form action="/search" method="get" class="mb-4">
+                    <div class="input-group input-group-lg">
+                        <input type="text" name="query" class="form-control" placeholder="Введите имя персонажа или человека..." required>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search"></i> Поиск
+                        </button>
+                    </div>
+                </form>
+
+                <div class="text-center">
+                    <p class="text-muted mb-4">Или попробуйте найти случайного персонажа:</p>
+                    <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
+                        <a href="/random/fictional" class="btn btn-outline-primary btn-lg px-4 gap-3">
+                            <i class="fas fa-dragon"></i> Случайный вымышленный персонаж
+                        </a>
+                        <a href="/random/real" class="btn btn-outline-success btn-lg px-4 gap-3">
+                            <i class="fas fa-user"></i> Случайный реальный человек
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
