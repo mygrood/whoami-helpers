@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}Генерация персонажа{% endblock %}
+
+{% block content %}
+<div class="loading-container">
+    <div class="spinner"></div>
+    <div class="loading-text">Генерация персонажа...</div>
+    <div id="timeout-message" class="alert alert-info mt-3" style="display: none;">
+        <i class="fas fa-info-circle me-2"></i>Запрос может занять некоторое время. Пожалуйста, подождите...
+    </div>
+</div>
+{% endblock %}
+
+{% block head %}
+<style>
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    text-align: center;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+}
+
+.loading-text {
+    font-size: 1.2rem;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.alert {
+    max-width: 500px;
+    margin: 0 auto;
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Loading page initialized');
+    
+    // Extract character type from URL
+    const pathParts = window.location.pathname.split('/');
+    const type = pathParts[pathParts.length - 1];
+    console.log('Character type:', type);
+    
+    // Show timeout message after 15 seconds
+    const timeoutMessage = document.getElementById('timeout-message');
+    const timeoutId = setTimeout(() => {
+        timeoutMessage.style.display = 'block';
+    }, 15000);
+    
+    // Handle unhandled promise rejections
+    window.addEventListener('unhandledrejection', function(event) {
+        console.error('Unhandled promise rejection:', event.reason);
+        showError('Произошла ошибка при загрузке данных. Пожалуйста, попробуйте еще раз.');
+    });
+    
+    function showError(message) {
+        const container = document.querySelector('.loading-container');
+        container.innerHTML = `
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-circle me-2"></i>${message}
+                <button class="btn btn-outline-danger btn-sm ms-3" onclick="window.location.reload()">
+                    <i class="fas fa-redo me-1"></i>Повторить
+                </button>
+            </div>
+        `;
+    }
+    
+    // Set up abort controller for timeout
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+    
+    // Fetch random character
+    fetch(`/api/random/${type}`, {
+        signal: controller.signal
+    })
+    .then(response => {
+        clearTimeout(timeoutId);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Received character data:', data);
+        if (data.wikidata_id) {
+            window.location.href = `/search?id=${data.wikidata_id}`;
+        } else {
+            throw new Error('No character ID received');
+        }
+    })
+    .catch(error => {
+        console.error('Error fetching character:', error);
+        if (error.name === 'AbortError') {
+            showError('Время ожидания истекло. Пожалуйста, попробуйте еще раз.');
+        } else {
+            showError('Не удалось загрузить персонажа. Пожалуйста, попробуйте еще раз.');
+        }
+    })
+    .finally(() => {
+        clearTimeout(timeout);
+    });
+});
+</script>
+{% endblock %} 

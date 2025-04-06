@@ -1,46 +1,208 @@
 {% extends "base.html" %}
 
+{% block title %}{{ character.name }} - Кто я?{% endblock %}
+
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-8">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <div class="text-center mb-4">
-                    <h2 class="mb-3">
-                        <i class="fas {% if character.type == 'fictional' %}fa-dragon text-primary{% else %}fa-user text-success{% endif %}"></i>
-                        {{ character.name }}
-                    </h2>
-                    <span class="badge {% if character.type == 'fictional' %}bg-primary{% else %}bg-success{% endif %} mb-3">
-                        {{ character.type }}
-                    </span>
-                </div>
+<div class="container mt-4">
+    <div class="row">
+        <!-- Основная информация -->
+        <div class="col-lg-8 col-md-12 mb-4">
+            <div class="card shadow-sm animate-fade-in">
+                <div class="card-body">
+                    <h1 class="card-title mb-4">{{ character.name }}</h1>
+                    
+                    {% if character.summary %}
+                    <p class="lead text-muted mb-4">{{ character.summary }}</p>
+                    {% endif %}
 
-                {% if character.summary %}
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <h5 class="card-title">
-                                <i class="fas fa-info-circle text-info"></i> Описание
-                            </h5>
-                            <p class="card-text">{{ character.summary }}</p>
-                        </div>
+                    <!-- Ключевые факты -->
+                    <div class="key-facts mb-4 animate-slide-up">
+                        <h3 class="h5 mb-3">Ключевые факты:</h3>
+                        <ul class="list-unstyled">
+                            {% if character.type %}
+                            <li class="mb-2">
+                                <i class="fas {% if character.type == 'fictional' %}fa-dragon{% else %}fa-user{% endif %} text-primary me-2"></i>
+                                <strong>Тип:</strong> {{ character.type }}
+                            </li>
+                            {% endif %}
+                            
+                            {% if character.gender %}
+                            <li class="mb-2">
+                                <i class="fas fa-venus-mars text-primary me-2"></i>
+                                <strong>Пол:</strong> {{ character.gender }}
+                            </li>
+                            {% endif %}
+                            
+                            {% if character.occupation %}
+                            <li class="mb-2">
+                                <i class="fas fa-briefcase text-primary me-2"></i>
+                                <strong>Профессия:</strong> {{ character.occupation }}
+                            </li>
+                            {% endif %}
+                            
+                            {% if character.nationality %}
+                            <li class="mb-2">
+                                <i class="fas fa-globe text-primary me-2"></i>
+                                <strong>Национальность:</strong> {{ character.nationality }}
+                            </li>
+                            {% endif %}
+                            
+                            {% if character.languages %}
+                            <li class="mb-2">
+                                <i class="fas fa-language text-primary me-2"></i>
+                                <strong>Языки:</strong> {{ character.languages }}
+                            </li>
+                            {% endif %}
+                            
+                            {% if character.known_for %}
+                            <li class="mb-2">
+                                <i class="fas fa-star text-primary me-2"></i>
+                                <strong>Известен за:</strong> {{ character.known_for }}
+                            </li>
+                            {% endif %}
+                            
+                            {% if character.awards %}
+                            <li class="mb-2">
+                                <i class="fas fa-award text-primary me-2"></i>
+                                <strong>Награды:</strong> {{ character.awards }}
+                            </li>
+                            {% endif %}
+                        </ul>
                     </div>
-                {% endif %}
 
-                {% if character.url %}
-                    <div class="text-center mb-4">
-                        <a href="{{ character.url }}" target="_blank" class="btn btn-outline-primary">
-                            <i class="fas fa-external-link-alt"></i> Подробнее на Wikidata
+                    <!-- Даты жизни -->
+                    <div class="life-dates mb-4 animate-slide-up">
+                        <h3 class="h5 mb-3">Даты жизни:</h3>
+                        <ul class="list-unstyled">
+                            {% if character.birth_date %}
+                            <li class="mb-2">
+                                <i class="fas fa-calendar text-primary me-2"></i>
+                                <strong>Дата рождения:</strong> {{ character.birth_date }}
+                                {% if character.place_of_birth %}
+                                <span class="text-muted">({{ character.place_of_birth }})</span>
+                                {% endif %}
+                            </li>
+                            {% endif %}
+                            
+                            {% if character.death_date %}
+                            <li class="mb-2">
+                                <i class="fas fa-cross text-primary me-2"></i>
+                                <strong>Дата смерти:</strong> {{ character.death_date }}
+                                {% if character.place_of_death %}
+                                <span class="text-muted">({{ character.place_of_death }})</span>
+                                {% endif %}
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+
+                    <!-- Кнопки действий -->
+                    <div class="d-flex flex-column flex-sm-row gap-2">
+                        <a href="{{ character.url }}" class="btn btn-outline-primary" target="_blank">
+                            <i class="fas fa-external-link-alt me-2"></i>Читать подробнее
                         </a>
+                        <a href="/random/{{ character.type }}" class="btn btn-primary">
+                            <i class="fas fa-random me-2"></i>Найти другого
+                        </a>
+                        <button class="btn btn-success share-btn" data-character="{{ character.name }}" data-url="{{ request.url }}">
+                            <i class="fas fa-share-alt me-2"></i>Поделиться
+                        </button>
                     </div>
-                {% endif %}
+                </div>
+            </div>
+        </div>
 
-                <div class="text-center">
-                    <a href="/" class="btn btn-outline-secondary">
-                        <i class="fas fa-arrow-left"></i> Вернуться к поиску
-                    </a>
+        <!-- Изображения -->
+        <div class="col-lg-4 col-md-12">
+            <div class="card shadow-sm mb-4 animate-fade-in">
+                <div class="card-body">
+                    <h3 class="h5 mb-3">Изображения</h3>
+                    {% if character.images and character.images|length > 0 %}
+                        <div class="row g-2">
+                            {% for image in character.images %}
+                            <div class="col-6 animate-fade-in" data-animation-delay="{{ loop.index * 0.1 }}">
+                                <a href="{{ image.url }}" target="_blank" class="d-block">
+                                    <img src="{{ image.url }}" alt="{{ character.name }}" class="img-fluid rounded">
+                                </a>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">Изображения не найдены</p>
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Модальное окно для шаринга -->
+<div class="modal fade" id="shareModal" tabindex="-1" aria-labelledby="shareModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="shareModalLabel">Поделиться</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="d-grid gap-2">
+                    <button class="btn btn-primary share-telegram">
+                        <i class="fab fa-telegram me-2"></i>Telegram
+                    </button>
+                    <button class="btn btn-info share-whatsapp">
+                        <i class="fab fa-whatsapp me-2"></i>WhatsApp
+                    </button>
+                    <button class="btn btn-secondary copy-link">
+                        <i class="fas fa-link me-2"></i>Копировать ссылку
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Применяем задержку анимации для изображений
+    document.querySelectorAll('[data-animation-delay]').forEach(function(element) {
+        element.style.animationDelay = element.getAttribute('data-animation-delay') + 's';
+    });
+    
+    // Инициализация модального окна для шаринга
+    const shareBtn = document.querySelector('.share-btn');
+    const shareModal = new bootstrap.Modal(document.getElementById('shareModal'));
+    
+    shareBtn.addEventListener('click', function() {
+        shareModal.show();
+    });
+    
+    // Обработчики для кнопок шаринга
+    document.querySelector('.share-telegram').addEventListener('click', function() {
+        const url = encodeURIComponent(this.closest('.modal').querySelector('.share-btn').dataset.url);
+        const text = encodeURIComponent(`Узнай, кто я: ${this.closest('.modal').querySelector('.share-btn').dataset.character}`);
+        window.open(`https://t.me/share/url?url=${url}&text=${text}`, '_blank');
+    });
+    
+    document.querySelector('.share-whatsapp').addEventListener('click', function() {
+        const url = encodeURIComponent(this.closest('.modal').querySelector('.share-btn').dataset.url);
+        const text = encodeURIComponent(`Узнай, кто я: ${this.closest('.modal').querySelector('.share-btn').dataset.character}`);
+        window.open(`https://wa.me/?text=${text}%20${url}`, '_blank');
+    });
+    
+    document.querySelector('.copy-link').addEventListener('click', function() {
+        const url = this.closest('.modal').querySelector('.share-btn').dataset.url;
+        navigator.clipboard.writeText(url).then(() => {
+            const btn = this;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check me-2"></i>Скопировано!';
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+            }, 2000);
+        });
+    });
+});
+</script>
 {% endblock %}

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Поиск персонажей{% endblock %}
+
+{% block content %}
+<div class="search-container">
+    <h1 class="text-center mb-4">
+        <i class="fas fa-search me-2"></i>Поиск персонажей
+    </h1>
+    
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <form action="/search" method="get" class="mb-4">
+                <div class="input-group">
+                    <input type="text" name="q" class="form-control" placeholder="Введите имя персонажа..." value="{{ query or '' }}" required>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search me-2"></i>Найти
+                    </button>
+                </div>
+            </form>
+            
+            {% if results %}
+            <div class="list-group">
+                {% for result in results %}
+                <a href="/search?id={{ result.id }}" class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">{{ result.name }}</h5>
+                        <small class="text-muted">
+                            {% if result.type == 'fictional' %}
+                            <i class="fas fa-theater-masks"></i> Персонаж
+                            {% else %}
+                            <i class="fas fa-user"></i> Человек
+                            {% endif %}
+                        </small>
+                    </div>
+                    <p class="mb-1">{{ result.description }}</p>
+                </a>
+                {% endfor %}
+            </div>
+            {% elif query %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>По вашему запросу ничего не найдено. Попробуйте изменить поисковый запрос.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 
